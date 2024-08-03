@@ -11,19 +11,32 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
+//getting all notes from db.json
+
 app.get('/api/notes', (req, res) => {
     res.json(allNotes.slice(1));
 });
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, './public/index.html'));
+//routes
+app.get('/api/notes/:id', (req, res) => {
+    const savedNotes = JSON.parse(fs.readFileSync('./db/db.json', 'utf8'));
+    const note = savedNotes.find((note) => note.id === req.params.id);
+    res.json(note);
 });
+//html routes
 app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, './public/notes.html'));
 });
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, './public/index.html'));
 });
+
+
+//creating new Note Item
+
 function createNewNote(body, notesArray) {
     const newNote = body;
     if (!Array.isArray(notesArray))
