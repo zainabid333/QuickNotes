@@ -15,16 +15,20 @@ if (window.location.pathname === '/notes') {
   noteList = document.querySelectorAll('.list-container .list-group');
 }
 
+if (window.location.pathname === '/notes') {
+  handleRenderBtns();
+  noteTitle.addEventListener('input', handleRenderBtns);
+  noteText.addEventListener('input', handleRenderBtns);
+}
+
 // Show an element
 const show = (elem) => {
-  elem.style.display = 'inline';
+  elem.classList.add('visible');
 };
-
 // Hide an element
 const hide = (elem) => {
-  elem.style.display = 'none';
+  elem.classList.remove('visible');
 };
-
 // activeNote is used to keep track of the note in the textarea
 let activeNote = {};
 
@@ -54,51 +58,57 @@ const deleteNote = (id) =>
   });
 
 const renderActiveNote = () => {
-  hide(saveNoteBtn);
-  hide(clearBtn);
-
   if (activeNote.id) {
-    show(newNoteBtn);
     noteTitle.setAttribute('readonly', true);
     noteText.setAttribute('readonly', true);
     noteTitle.value = activeNote.title;
     noteText.value = activeNote.text;
+    show(newNoteBtn);
+    hide(saveNoteBtn);
   } else {
-    hide(newNoteBtn);
     noteTitle.removeAttribute('readonly');
     noteText.removeAttribute('readonly');
     noteTitle.value = '';
     noteText.value = '';
+    hide(newNoteBtn);
+    show(saveNoteBtn);
+  }
+  handleRenderBtns();
+};
+const handleNoteSave = () => {
+  const note = {
+    title: noteTitle.value,
+    text: noteText.value,
+  };
+
+  if (activeNote.id) {
+    note.id = activeNote.id;
+    saveNote(note).then(() => {
+      getAndRenderNotes();
+      renderActiveNote();
+    });
+  } else {
+    saveNote(note).then(() => {
+      getAndRenderNotes();
+      renderActiveNote();
+    });
   }
 };
-
-const handleNoteSave = () => {
-  const newNote = {
-    title: noteTitle.value,
-    text: noteText.value
-  };
-  saveNote(newNote).then(() => {
-    getAndRenderNotes();
-    renderActiveNote();
-  });
-};
-
 // Delete the clicked note
 const handleNoteDelete = (e) => {
-  // Prevents the click listener for the list from being called when the button inside of it is clicked
-  e.stopPropagation();
+  if (e.target.classList.contains('delete-note')) {
+    e.stopPropagation();
+    const note = e.target.closest('.list-group-item');
+    const noteId = JSON.parse(note.getAttribute('data-note')).id;
 
-  const note = e.target;
-  const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).id;
-
-  if (activeNote.id === noteId) {
-    activeNote = {};
+    deleteNote(noteId).then(() => {
+      if (activeNote.id === noteId) {
+        activeNote = {};
+      }
+      getAndRenderNotes();
+      renderActiveNote();
+    });
   }
-
-  deleteNote(noteId).then(() => {
-    getAndRenderNotes();
-    renderActiveNote();
-  });
 };
 
 // Sets the activeNote and displays it
@@ -106,23 +116,33 @@ const handleNoteView = (e) => {
   e.preventDefault();
   activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
   renderActiveNote();
+  show(newNoteBtn); // Show "New Note" button to allow creating a new note
+  show(saveNoteBtn); // Show "Save Note" button to allow saving edits
+  noteTitle.removeAttribute('readonly');
+  noteText.removeAttribute('readonly');
 };
 
 // Sets the activeNote to and empty object and allows the user to enter a new note
 const handleNewNoteView = (e) => {
   activeNote = {};
-  show(clearBtn);
   renderActiveNote();
+  handleRenderBtns();
 };
 
 // Renders the appropriate buttons based on the state of the form
 const handleRenderBtns = () => {
+  console.log('Title:', noteTitle.value.trim());
+  console.log('Text:', noteText.value.trim());
   if (!noteTitle.value.trim() && !noteText.value.trim()) {
+    console.log('Hiding save and clear buttons');
     hide(saveNoteBtn);
     hide(clearBtn);
+    show(newNoteBtn);
   } else {
+    console.log('Showing save and clear buttons');
     show(saveNoteBtn);
     show(clearBtn);
+    hide(newNoteBtn);
   }
 };
 
@@ -190,6 +210,8 @@ if (window.location.pathname === '/notes') {
   // noteForm.addEventListener('input', handleRenderBtns);
   noteTitle.addEventListener('input', handleRenderBtns);
   noteText.addEventListener('input', handleRenderBtns);
+  document.addEventListener('click', handleNoteDelete);
+  document.addEventListener('click', handleNoteView);
   handleRenderBtns();
 }
 
