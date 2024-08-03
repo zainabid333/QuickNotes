@@ -14,7 +14,8 @@ app.use(express.static('public'));
 //getting all notes from db.json
 
 app.get('/api/notes', (req, res) => {
-    res.json(allNotes.slice(1));
+    let savedNotes = JSON.parse(fs.readFileSync('./db/db.json', 'utf8'));
+    res.json(savedNotes);
 });
 //routes
 app.get('/api/notes/:id', (req, res) => {
