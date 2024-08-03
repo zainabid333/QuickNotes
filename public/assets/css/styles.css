@@ -9,6 +9,10 @@ body {
   display: none;
 }
 
+.save-note.visible, .new-note.visible, .clear-btn.visible {
+  display: inline-block;
+}
+
 .icons {
   margin-left: 15px;
   margin-right: 15px;
