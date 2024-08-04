@@ -42,7 +42,7 @@ const getNotes = () =>
 
 const saveNote = (note) =>
   fetch('/api/notes', {
-    method: 'POST',
+    method: note.id ? 'PUT' : 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -199,6 +199,8 @@ const renderNoteList = async (notes) => {
     noteListItems.forEach((note) => noteList[0].append(note));
   }
 };
+
+
 
 // Gets notes from the db and renders them to the sidebar
 const getAndRenderNotes = () => getNotes().then(renderNoteList);
