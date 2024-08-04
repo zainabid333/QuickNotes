@@ -38,16 +38,16 @@ const getNotes = () =>
     headers: {
       'Content-Type': 'application/json'
     }
-  });
+  }).then(response => response.json());
 
 const saveNote = (note) =>
   fetch('/api/notes', {
-    method: note.id ? 'PUT' : 'POST',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(note)
-  });
+  }).then(response => response.json());
 
 const deleteNote = (id) =>
   fetch(`/api/notes/${id}`, {
@@ -76,23 +76,19 @@ const renderActiveNote = () => {
   handleRenderBtns();
 };
 const handleNoteSave = () => {
-  const note = {
+  const newNote = {
     title: noteTitle.value,
     text: noteText.value,
   };
 
-  if (activeNote.id) {
-    note.id = activeNote.id;
-    saveNote(note).then(() => {
-      getAndRenderNotes();
-      renderActiveNote();
-    });
-  } else {
-    saveNote(note).then(() => {
-      getAndRenderNotes();
-      renderActiveNote();
-    });
-  }
+  saveNote(newNote).then(() => {
+    getAndRenderNotes();
+    renderActiveNote();
+    // Clear the form
+    noteTitle.value = '';
+    noteText.value = '';
+    handleRenderBtns();
+  });
 };
 // Delete the clicked note
 const handleNoteDelete = (e) => {
