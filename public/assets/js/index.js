@@ -59,12 +59,14 @@ const renderActiveNote = () => {
     noteText.setAttribute('readonly', true);
     noteTitle.value = activeNote.title;
     noteText.value = activeNote.text;
+    newNoteBtn.classList.add('visible');
   } else {
     newNoteBtn.textContent = 'New Note';
     noteTitle.removeAttribute('readonly');
     noteText.removeAttribute('readonly');
     noteTitle.value = '';
     noteText.value = '';
+    newNoteBtn.classList.add('visible');
   }
 };
 
