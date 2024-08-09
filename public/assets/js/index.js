@@ -10,6 +10,7 @@ if (window.location.pathname === '/notes') {
   saveNoteBtn = document.querySelector('.save-note');
   newNoteBtn = document.querySelector('.new-note');
   noteList = document.querySelectorAll('.list-container .list-group');
+  clearNoteBtn = document.querySelector('.clear-btn');
 }
 
 // Show an element
@@ -60,6 +61,7 @@ const renderActiveNote = () => {
     noteTitle.value = activeNote.title;
     noteText.value = activeNote.text;
     newNoteBtn.classList.add('visible');
+
   } else {
     newNoteBtn.textContent = 'New Note';
     noteTitle.removeAttribute('readonly');
@@ -67,6 +69,7 @@ const renderActiveNote = () => {
     noteTitle.value = '';
     noteText.value = '';
     newNoteBtn.classList.add('visible');
+    clearNoteBtn.classList.add('visible');
   }
 };
 
